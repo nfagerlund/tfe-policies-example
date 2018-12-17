@@ -94,14 +94,6 @@ resource "tfe_sentinel_policy" "placeholder-true" {
   enforce_mode = "advisory"
 }
 
-resource "tfe_sentinel_policy" "placeholder-false" {
-  name = "placeholder-false"
-  description = "always fails"
-  organization = "${var.tfe_organization}"
-  policy       = "${file("./placeholder-false.sentinel")}"
-  enforce_mode = "soft-mandatory"
-}
-
 resource "tfe_sentinel_policy" "abstract_test" {
   name = "abstract_test"
   description = "Forbid the triggers.username of a null_resource to be a plural noun. Implemented w/ re-usable all-resources fetcher. "
