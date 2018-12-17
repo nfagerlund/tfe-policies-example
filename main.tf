@@ -18,20 +18,13 @@ variable "tfe_hostname" {
 
 variable "tfe_organization" {
   description = "The TFE organization to apply your changes to."
-  default     = "example_corp"
+  default     = "nicktech"
 }
 
 variable "tfe_workspace_ids" {
   description = "Mapping of workspace names to IDs, for easier use in policy sets."
   type        = "map"
 
-  default = {
-    "app-prod"                = "ws-LbK9gZEL4beEw9A2"
-    "app-dev"                 = "ws-uMM93B6XrmCwh3Bj"
-    "app-staging"             = "ws-Mp6tkwtspVNZ5DSf"
-    "app-dev-sandbox-bennett" = "ws-s7jPpcQG4AGrSsTb"
-    "tfe-policies"            = "ws-Vt9UKZE5ejqGMp94"
-  }
 }
 
 provider "tfe" {
@@ -47,7 +40,7 @@ resource "tfe_policy_set" "global" {
   global       = true
 
   policy_ids = [
-    "${tfe_sentinel_policy.passthrough.id}",
+    "${tfe_sentinel_policy.placeholder-true.id}",
     "${tfe_sentinel_policy.aws-block-allow-all-cidr.id}",
     "${tfe_sentinel_policy.azurerm-block-allow-all-cidr.id}",
     "${tfe_sentinel_policy.gcp-block-allow-all-cidr.id}",
@@ -64,6 +57,7 @@ resource "tfe_policy_set" "production" {
 
   policy_ids = [
     "${tfe_sentinel_policy.aws-restrict-instance-type-prod.id}",
+    "${tfe_sentinel_policy.abstract_test.id}",
   ]
 
   workspace_external_ids = [
@@ -102,13 +96,30 @@ resource "tfe_policy_set" "sentinel" {
 
 # Test/experimental policies:
 
-resource "tfe_sentinel_policy" "passthrough" {
-  name         = "passthrough"
+resource "tfe_sentinel_policy" "placeholder-true" {
+  name         = "placeholder-true"
   description  = "Just passing through! Always returns 'true'."
   organization = "${var.tfe_organization}"
-  policy       = "${file("./passthrough.sentinel")}"
+  policy       = "${file("./placeholder-true.sentinel")}"
   enforce_mode = "advisory"
 }
+
+resource "tfe_sentinel_policy" "placeholder-false" {
+  name = "placeholder-false"
+  description = "always fails"
+  organization = "${var.tfe_organization}"
+  policy       = "${file("./placeholder-false.sentinel")}"
+  enforce_mode = "soft-mandatory"
+}
+
+resource "tfe_sentinel_policy" "abstract_test" {
+  name = "abstract_test"
+  description = "Forbid the triggers.username of a null_resource to be a plural noun. Implemented w/ re-usable all-resources fetcher. "
+  organization = "${var.tfe_organization}"
+  policy       = "${file("./abstract_test.sentinel")}"
+  enforce_mode = "soft-mandatory"
+}
+
 
 # Sentinel management policies:
 
