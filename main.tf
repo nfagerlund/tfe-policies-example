@@ -61,7 +61,8 @@ resource "tfe_policy_set" "production" {
   ]
 
   workspace_external_ids = [
-    "${var.tfe_workspace_ids["app-prod"]}",
+    "${var.tfe_workspace_ids["minimum-gitlab"]}",
+    "${var.tfe_workspace_ids["minimum-prod"]}",
   ]
 }
 
@@ -75,8 +76,8 @@ resource "tfe_policy_set" "development" {
   ]
 
   workspace_external_ids = [
-    "${var.tfe_workspace_ids["app-dev"]}",
-    "${var.tfe_workspace_ids["app-dev-sandbox-bennett"]}",
+    "${var.tfe_workspace_ids["filetest-dev"]}",
+    "${var.tfe_workspace_ids["minimum-dev"]}",
   ]
 }
 
