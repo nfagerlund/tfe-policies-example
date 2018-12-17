@@ -1,0 +1,34 @@
+import "tfplan"
+
+get_resource_bodies = func(named_and_counted_resources) {
+	result = []
+	for named_and_counted_resources as _, instances {
+		for instances as _, body {
+            append(result, body)
+        }
+	}
+	return result
+}
+
+# Get an array of resource bodies
+get_resources = func(type) {
+	instances = []
+	if length(tfplan.module_paths else []) > 0 { # always true in the real tfplan import
+		for tfplan.module_paths as path {
+			named_resources = tfplan.module(path).resources[type] else {}
+			instances += get_resource_bodies(named_resources)
+		}
+	} else { # fallback for tests
+		named_resources = tfplan.resources[type] else {}
+		instances += get_resource_bodies(named_resources)
+	}
+	return instances
+}
+
+nulls = get_resources("null_resource")
+
+main = rule {
+	all nulls as r {
+		r.applied.triggers.username not matches "[sS]$" # no plurals
+	}
+}
