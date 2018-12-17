@@ -1,14 +1,3 @@
-terraform {
-  backend "remote" {
-    hostname     = "app.terraform.io"
-    organization = "hashicorp-v2"
-
-    workspaces {
-      name = "tfe-policies-example"
-    }
-  }
-}
-
 variable "tfe_token" {}
 
 variable "tfe_hostname" {
